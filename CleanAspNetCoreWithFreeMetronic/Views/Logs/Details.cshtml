@@ -1,0 +1,48 @@
+﻿@model CleanAspNetCoreWithFreeMetronic.Models.LogDTO
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>LogDTO</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.LogDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LogDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TimeSpent)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TimeSpent)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LogDescription)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LogDescription)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.JobTaskId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.JobTaskId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DoneBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DoneBy.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

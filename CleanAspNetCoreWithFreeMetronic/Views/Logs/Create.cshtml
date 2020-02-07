@@ -1,0 +1,48 @@
+﻿@model CleanAspNetCoreWithFreeMetronic.Models.LogDTO
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>LogDTO</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="LogDate" class="control-label"></label>
+                <input asp-for="LogDate" class="form-control" />
+                <span asp-validation-for="LogDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TimeSpent" class="control-label"></label>
+                <input asp-for="TimeSpent" class="form-control" />
+                <span asp-validation-for="TimeSpent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LogDescription" class="control-label"></label>
+                <input asp-for="LogDescription" class="form-control" />
+                <span asp-validation-for="LogDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="JobTaskId" class="control-label"></label>
+                <select asp-for="JobTaskId" class="form-control" asp-items="ViewBag.JobTaskId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="DoneById" class="control-label"></label>
+                <select asp-for="DoneById" class ="form-control" asp-items="ViewBag.DoneById"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

@@ -1,0 +1,66 @@
+﻿@model CleanAspNetCoreWithFreeMetronic.Models.JobTaskDTO
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>JobTaskDTO</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TaskName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TaskName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TaskStart)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TaskStart)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EstimateHours)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EstimateHours)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TaskDescription)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TaskDescription)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Completed)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Completed)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Project)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Project.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Responsible)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Responsible.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TimeSpent)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TimeSpent)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
