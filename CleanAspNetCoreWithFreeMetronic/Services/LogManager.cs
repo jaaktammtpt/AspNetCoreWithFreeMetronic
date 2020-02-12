@@ -1,4 +1,6 @@
-﻿using CleanAspNetCoreWithFreeMetronic.Services;
+﻿using AutoMapper;
+using CleanAspNetCoreWithFreeMetronic.Models;
+using CleanAspNetCoreWithFreeMetronic.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,38 +13,47 @@ namespace CleanAspNetCoreWithFreeMetronic.Data.Services
     public class LogManager : ILogManager
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public LogManager(ApplicationDbContext context)
+        public LogManager(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Log>> GetAllAsync()
+        public async Task<IEnumerable<LogDTO>> GetAllAsync()
         {
-            return await _context.Logs
+            var logs = await _context.Logs
                 .Include(l => l.DoneBy)
                 .ToListAsync();
+            return _mapper.Map<IEnumerable<LogDTO>>(logs);
         }
 
-        public async Task<Log> GetByIdAsync(int? id)
+        public async Task<LogDTO> GetByIdAsync(int? id)
         {
-            return await _context.Logs
+            var log = await _context.Logs
                 .Include(l => l.DoneBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            return _mapper.Map<LogDTO>(log);
         }
 
-        public async Task<Log> CreateAsync(Log log)
-        {          
+        public async Task<LogDTO> CreateAsync(LogDTO logDTO)
+        {
+            var log = _mapper.Map<Log>(logDTO);
             _context.Add(log);
             await _context.SaveChangesAsync();
-            return log;
+
+            return _mapper.Map<LogDTO>(log);
         }
 
-        public async Task<Log> UpdateAsync(Log log)
+        public async Task<LogDTO> UpdateAsync(LogDTO logDTO)
         {
+            var log = _mapper.Map<Log>(logDTO);
             _context.Update(log);
             await _context.SaveChangesAsync();
-            return log;
+
+            return _mapper.Map<LogDTO>(log);
         }
 
         public bool ExistAsync(int id)
@@ -59,41 +70,10 @@ namespace CleanAspNetCoreWithFreeMetronic.Data.Services
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception)
+            catch (ArgumentNullException e)
             {
-                throw;
+                throw new System.ArgumentNullException("Pask", e);
             }
-            
         }
-
-
-
-        //public async Task<Log> DeleteAsync(int id)
-        //{
-        //    return await _context.Logs.AnyAsync(e => e.Id == id);
-        //}
-
-
-
-
-
-        //Task<bool> IRepository<Log>.DeleteAsync(int id)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public async Task<Log> DeleteAsync(Log log)
-        //{
-        //    //var log = await _context.Logs.FindAsync(id);
-        //    _context.Logs.Remove(log);
-        //    await _context.SaveChangesAsync();            
-        //}
-
-        //public async Task<Log> DeleteAsync(int id)
-        //{
-        //    var log = await _context.Logs.FindAsync(id);
-        //    _context.Logs.Remove(log);
-        //    await _context.SaveChangesAsync();
-        //}
     }
 }

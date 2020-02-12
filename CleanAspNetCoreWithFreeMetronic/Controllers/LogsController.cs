@@ -16,15 +16,13 @@ namespace CleanAspNetCoreWithFreeMetronic.Controllers
     public class LogsController : Controller
     {
         private readonly ILogManager _logManager;
-        private readonly IMapper _mapper;
         private readonly ILogger<Log> _logger;
         private readonly ApplicationDbContext _context;
 
-        public LogsController(ILogger<Log> logger,ILogManager logManager, IMapper mapper, ApplicationDbContext context)
+        public LogsController(ILogger<Log> logger,ILogManager logManager, ApplicationDbContext context)
         {
             _logger = logger;
             _logManager = logManager;
-            _mapper = mapper;
             _context = context;
         }
 
@@ -32,27 +30,25 @@ namespace CleanAspNetCoreWithFreeMetronic.Controllers
         public async Task<IActionResult> Index()
         {
             var logs = await _logManager.GetAllAsync();
-            var dto = _mapper.Map<IEnumerable<LogDTO>>(logs);
 
-            return View(dto);
+            return View(logs);
         }
 
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             var log = await _logManager.GetByIdAsync(id);
-            var dto = _mapper.Map<LogDTO>(log);
 
             if (log == null)
             {
                 return NotFound();
             }
 
-            return View(dto);
+            return View(log);
         }
 
         // GET: Logs/Create
@@ -75,15 +71,14 @@ namespace CleanAspNetCoreWithFreeMetronic.Controllers
         {
             if (ModelState.IsValid)
             {
-                var log = _mapper.Map<Log>(logDTO);
-                await _logManager.CreateAsync(log);
+                await _logManager.CreateAsync(logDTO);
 
                 return RedirectToAction(nameof(Index));
             }
 
             ViewData["JobTaskId"] = new SelectList(_context.JobTasks, "Id", "TaskName", logDTO.JobTaskId);
             ViewData["DoneById"] = new SelectList(_context.Users, "Id", "UserName", logDTO.DoneById);
-            
+
             return View(logDTO);
         }
 
@@ -95,11 +90,9 @@ namespace CleanAspNetCoreWithFreeMetronic.Controllers
                 return NotFound();
             }
 
-            var log = await _logManager.GetByIdAsync(id);
-            //var logDTO = await _context.LogDTO.FindAsync(id);
-            var dto = _mapper.Map<LogDTO>(log);
+            var logDTO = await _logManager.GetByIdAsync(id);
 
-            if (log == null)
+            if (logDTO == null)
             {
                 return NotFound();
             }
@@ -107,11 +100,8 @@ namespace CleanAspNetCoreWithFreeMetronic.Controllers
             ViewData["JobTaskId"] = new SelectList(_context.JobTasks, "Id", "TaskName");
             ViewData["DoneById"] = new SelectList(_context.Users, "Id", "UserName");
 
-            return View(dto);
+            return View(logDTO);
         }
-
-
-
 
         // POST: Logs/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -125,19 +115,15 @@ namespace CleanAspNetCoreWithFreeMetronic.Controllers
                 return NotFound();
             }
 
-            var log = _mapper.Map<Log>(logDTO);
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //var log = _mapper.Map<Log>(logDTO);
-                    //_context.Update(logDTO);
-                    await _logManager.UpdateAsync(log);
+                    await _logManager.UpdateAsync(logDTO);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!(_logManager.ExistAsync(log.Id)))
+                    if (!(_logManager.ExistAsync(logDTO.Id)))
                     {
                         return NotFound();
                     }
@@ -152,9 +138,7 @@ namespace CleanAspNetCoreWithFreeMetronic.Controllers
             ViewData["JobTaskId"] = new SelectList(_context.JobTasks, "Id", "TaskName", logDTO.JobTaskId);
             ViewData["DoneById"] = new SelectList(_context.Users, "Id", "UserName", logDTO.DoneById);
 
-            var dto = _mapper.Map<LogDTO>(log);
-
-            return View(dto);
+            return View(logDTO);
         }
 
 
@@ -168,14 +152,13 @@ namespace CleanAspNetCoreWithFreeMetronic.Controllers
             }
 
             var log = await _logManager.GetByIdAsync(id);
-            var dto = _mapper.Map<LogDTO>(log);
 
-            if (dto == null)
+            if (log == null)
             {
                 return NotFound();
             }
 
-            return View(dto);
+            return View(log);
         }
 
         // POST: Logs/Delete/5
@@ -183,10 +166,8 @@ namespace CleanAspNetCoreWithFreeMetronic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            //var log = await _logManager.GetByIdAsync(id);
             await _logManager.DeleteAsync(id);
-            //_context.LogDTO.Remove(logDTO);
-            //await _context.SaveChangesAsync();
+            
             return RedirectToAction(nameof(Index));
         }
         

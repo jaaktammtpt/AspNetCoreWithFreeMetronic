@@ -15,44 +15,21 @@ using Xunit;
 
 namespace CleanAspNetCore.UnitTests.ServiceTests
 {
-    public class ProjectManagerTests : TestBase
+    public class ProjectManagerTests : ServiceTestBase
     {
+        private readonly ProjectManager ProjectService;
+
+        public ProjectManagerTests()
+        {
+            ProjectService = new ProjectManager(DbContext, Mapper);
+        }
+
         [Fact]
         public async Task GetAllAsync_should_return_list_of_projects()
-        {            
-            var dbContext = GetDbContext();
-            var mapper = GetMapper();
+        {
+            await InitProjectListAsync();
 
-            dbContext.Projects.Add(new Project {
-                Name = "Alfa",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 10000.0M,
-                Rate = 100.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Beeta",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 20000.0M,
-                Rate = 120.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Gamma",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 30000.0M,
-                Rate = 130.0M
-            });
-
-            await dbContext.SaveChangesAsync();
-
-            var service = new ProjectManager(dbContext, mapper);
-            var result = await service.GetAllAsync();
+            var result = await ProjectService.GetAllAsync();
 
             Assert.NotNull(result);
             Assert.Equal(3, result.Count());
@@ -61,12 +38,10 @@ namespace CleanAspNetCore.UnitTests.ServiceTests
         [Fact]
         public async Task GetByIdAsync_should_return_null_for_missing_project()
         {
-            var dbContext = GetDbContext();
-            var mapper = GetMapper();
-
+            await InitProjectListAsync();
             var id = -1;
-            var service = new ProjectManager(dbContext, mapper);
-            var result = await service.GetByIdAsync(id);
+
+            var result = await ProjectService.GetByIdAsync(id);
 
             Assert.Null(result);
         }
@@ -74,54 +49,22 @@ namespace CleanAspNetCore.UnitTests.ServiceTests
         [Fact]
         public async Task GetByIdAsync_should_return_model_for_existing_customer()
         {
-            var dbContext = GetDbContext();
-            var mapper = GetMapper();
+            await InitProjectListAsync();
             var id = 2;
 
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Alfa",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 10000.0M,
-                Rate = 100.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Beeta",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 20000.0M,
-                Rate = 120.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Gamma",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 30000.0M,
-                Rate = 130.0M
-            });
-
-            await dbContext.SaveChangesAsync();
-            var service = new ProjectManager(dbContext, mapper);
-            var result = await service.GetByIdAsync(id);
+            var result = await ProjectService.GetByIdAsync(id);
 
             Assert.NotNull(result);
             Assert.Equal(id, result.Id);
         }
 
         [Fact]
-        public void ExistAsync_should_return_false_for_missing_project()
+        public async Task ExistAsync_should_return_false_for_missing_projectAsync()
         {
-            var dbContext = GetDbContext();
-            var mapper = GetMapper();
-
+            await InitProjectListAsync();
             var id = -1;
-            var service = new ProjectManager(dbContext, mapper);
-            var result = service.ExistAsync(id);
+
+            var result = ProjectService.ExistAsync(id);
 
             Assert.False(result);
         }
@@ -129,40 +72,10 @@ namespace CleanAspNetCore.UnitTests.ServiceTests
         [Fact]
         public async Task ExistAsync_should_return_true_for_missing_project()
         {
-            var dbContext = GetDbContext();
-            var mapper = GetMapper();
+            await InitProjectListAsync();
             var id = 2;
 
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Alfa",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 10000.0M,
-                Rate = 100.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Beeta",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 20000.0M,
-                Rate = 120.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Gamma",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 30000.0M,
-                Rate = 130.0M
-            });
-
-            await dbContext.SaveChangesAsync();
-            var service = new ProjectManager(dbContext, mapper);
-            var result = service.ExistAsync(id);
+            var result = ProjectService.ExistAsync(id);
 
             Assert.True(result);
         }
@@ -170,41 +83,10 @@ namespace CleanAspNetCore.UnitTests.ServiceTests
         [Fact]
         public async Task DeleteAsync_should_return_true_for_deleted_project()
         {
-            var dbContext = GetDbContext();
-            var mapper = GetMapper();
+            await InitProjectListAsync();
             var id = 2;
 
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Alfa",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 10000.0M,
-                Rate = 100.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Beeta",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 20000.0M,
-                Rate = 120.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Gamma",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 30000.0M,
-                Rate = 130.0M
-            });
-
-            await dbContext.SaveChangesAsync();
-
-            var service = new ProjectManager(dbContext, mapper);
-            var data = await service.DeleteAsync(id);
+            var data = await ProjectService.DeleteAsync(id);
 
             Assert.True(data);
         }
@@ -213,83 +95,20 @@ namespace CleanAspNetCore.UnitTests.ServiceTests
         [Fact]
         public async Task DeleteAsync_should_return_false_for_deleted_project()
         {
-            var dbContext = GetDbContext();
-            var mapper = GetMapper();
+            await InitProjectListAsync();
             var id = 4;
 
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Alfa",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 10000.0M,
-                Rate = 100.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Beeta",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 20000.0M,
-                Rate = 120.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Gamma",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 30000.0M,
-                Rate = 130.0M
-            });
-
-            await dbContext.SaveChangesAsync();
-
-            var service = new ProjectManager(dbContext, mapper);
-            //var data = await service.DeleteAsync(id);
-
-            var exeption = await Assert.ThrowsAsync<ArgumentNullException>(async () => await service.DeleteAsync(id));
+            var exeption = await Assert.ThrowsAsync<ArgumentNullException>(async () => await ProjectService.DeleteAsync(id));
             Assert.Equal("Pask", exeption.Message);
         }
 
         [Fact]
         public async Task UpdateAsync_should_return_updated_model()
         {
-            var dbContext = GetDbContext();
-            var mapper = GetMapper();
+            await InitProjectListAsync();
             var id = 2;
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Alfa",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 10000.0M,
-                Rate = 100.0M
-            });
 
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Beeta",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 20000.0M,
-                Rate = 120.0M
-            });
-
-            dbContext.Projects.Add(new Project
-            {
-                Name = "Gamma",
-                Begin = DateTime.Now.Date,
-                Finish = DateTime.Today.AddDays(90),
-                Budget = 30000.0M,
-                Rate = 130.0M
-            });            
-                        
-            await dbContext.SaveChangesAsync();
-
-            var service = new ProjectManager(dbContext, mapper);
-            var project = await service.GetByIdAsync(id);
+            var project = await ProjectService.GetByIdAsync(id);
 
             var update = new ProjectDTO();
             update.Name = "Updated";
@@ -298,7 +117,7 @@ namespace CleanAspNetCore.UnitTests.ServiceTests
             update.Budget = project.Budget;
             update.Rate = project.Rate;
 
-            var updatedData = await service.UpdateAsync(update);
+            var updatedData = await ProjectService.UpdateAsync(update);
 
             Assert.Equal("Updated", updatedData.Name);
         }
@@ -306,10 +125,7 @@ namespace CleanAspNetCore.UnitTests.ServiceTests
         [Fact]
         public async Task CreateAsync_should_return_created_object()
         {
-            var dbContext = GetDbContext();
-            var mapper = GetMapper();
-
-            var service = new ProjectManager(dbContext, mapper);
+            await InitProjectListAsync();
 
             var projectDTO = new ProjectDTO();
             projectDTO.Name = "Updated";
@@ -318,10 +134,42 @@ namespace CleanAspNetCore.UnitTests.ServiceTests
             projectDTO.Budget = 10000.0M;
             projectDTO.Rate = 100.0M;
 
-            var result = await service.CreateAsync(projectDTO);
+            var result = await ProjectService.CreateAsync(projectDTO);
 
             Assert.NotNull(result);
             Assert.IsType<ProjectDTO>(result);
+        }
+
+        private async Task InitProjectListAsync()
+        {
+            DbContext.Projects.Add(new Project
+            {
+                Name = "Alfa",
+                Begin = DateTime.Now.Date,
+                Finish = DateTime.Today.AddDays(90),
+                Budget = 10000.0M,
+                Rate = 100.0M
+            });
+
+            DbContext.Projects.Add(new Project
+            {
+                Name = "Beeta",
+                Begin = DateTime.Now.Date,
+                Finish = DateTime.Today.AddDays(90),
+                Budget = 20000.0M,
+                Rate = 120.0M
+            });
+
+            DbContext.Projects.Add(new Project
+            {
+                Name = "Gamma",
+                Begin = DateTime.Now.Date,
+                Finish = DateTime.Today.AddDays(90),
+                Budget = 30000.0M,
+                Rate = 130.0M
+            });
+
+            await DbContext.SaveChangesAsync();
         }
     }
 }
